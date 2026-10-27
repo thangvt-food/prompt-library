@@ -6,3 +6,5 @@ node_modules/
 .wrangler/
 .admin-password
 prompt-library-admin-password.txt
+android/
+release/

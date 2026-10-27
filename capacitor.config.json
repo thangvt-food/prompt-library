@@ -1,0 +1,10 @@
+{
+  "appId": "com.thangvtfood.promptlibrary",
+  "appName": "Prompt Library",
+  "webDir": "www",
+  "server": {
+    "url": "https://thangvt-food.github.io/prompt-library/",
+    "cleartext": false,
+    "androidScheme": "https"
+  }
+}

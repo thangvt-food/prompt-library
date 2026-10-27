@@ -1,14 +1,45 @@
 {
   "name": "prompt-library",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "admin:key": "node admin-key-server.js",
+    "build:linux": "electron-builder --linux AppImage --x64 --publish never",
     "dev:api": "wrangler dev",
     "db:migrate:local": "wrangler d1 migrations apply prompt-library-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply prompt-library-db --remote",
     "deploy:api": "wrangler deploy"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0",
     "wrangler": "^4.153.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3"
+  },
+  "main": "desktop/main.cjs",
+  "build": {
+    "appId": "com.thangvtfood.promptlibrary",
+    "productName": "Prompt Library",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "desktop/**/*"
+    ],
+    "linux": {
+      "category": "Utility",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "Prompt-Library-${version}-${arch}.${ext}"
+    }
   }
 }

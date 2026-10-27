@@ -1,0 +1,95 @@
+name: Build desktop and Android apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - "app-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  linux:
+    name: Build Linux AppImage
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build AppImage
+        run: npm run build:linux
+      - name: Upload Linux app
+        uses: actions/upload-artifact@v4
+        with:
+          name: prompt-library-linux-x64
+          path: release/*.AppImage
+          if-no-files-found: error
+          retention-days: 30
+
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - name: Install dependencies
+        run: npm ci
+      - name: Create Android project
+        run: npx cap add android
+      - name: Sync Android project
+        run: npx cap sync android
+      - name: Build debug APK
+        run: |
+          cd android
+          ./gradlew --no-daemon assembleDebug
+      - name: Upload Android app
+        uses: actions/upload-artifact@v4
+        with:
+          name: prompt-library-android-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    name: Publish tagged app release
+    if: startsWith(github.ref, 'refs/tags/app-v')
+    needs: [linux, android]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG_NAME" release/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Prompt Library $TAG_NAME" \
+            --generate-notes

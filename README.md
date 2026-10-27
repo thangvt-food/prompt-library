@@ -15,6 +15,19 @@ Mở [website](https://thangvt-food.github.io/prompt-library/). Nếu muốn dù
 - Vì website public, mọi người đều đọc được nội dung prompt; không lưu thông tin bí mật.
 - Nếu trình duyệt còn dữ liệu từ phiên bản localStorage cũ, dữ liệu sẽ được chuyển lên D1 sau lần đăng nhập quản trị đầu tiên.
 
+## App Android và Linux
+
+Ứng dụng đóng gói dùng WebView mở website production, vì vậy thay đổi giao diện trên website sẽ tự cập nhật trong app; cần có Internet để tải thư viện. Mã nguồn không tải hay build Android/Linux trên laptop.
+
+- Vào GitHub repo → **Actions** → **Build desktop and Android apps** → **Run workflow** để tạo APK Android và AppImage Linux.
+- Mở lần chạy workflow đó, tải artifact `prompt-library-android-debug` hoặc `prompt-library-linux-x64`.
+- APK là bản debug để cài thủ công trên Android; Linux dùng AppImage x86_64.
+- Muốn phát hành bản gắn version: tạo/push tag dạng `app-v1.0.0`. Workflow sẽ build cả hai và đính kèm file vào GitHub Release.
+- Linux AppImage cần quyền execute; mở file bằng `./Prompt-Library-*.AppImage` hoặc cấp quyền chạy trong trình quản lý file.
+- Cài APK tải từ Actions có thể yêu cầu cho phép cài ứng dụng không rõ nguồn trong Android.
+
+Workflow chạy build trên GitHub-hosted runners; không cần Android SDK, Rust hay WebKit cài trên máy cá nhân.
+
 ## Triển khai Cloudflare
 
 Yêu cầu Node.js 22+ và Wrangler đã đăng nhập bằng `npx wrangler login`.
