@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Thư viện prompt cá nhân: tìm, chỉnh sửa và sao chép prompt nhanh."
+    />
+    <meta name="theme-color" content="#f5f4f0" />
+    <title>Prompt Library — Góc prompt của bạn</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Prompt Library, trang chủ">
+          <span class="brand-mark" aria-hidden="true">p.</span>
+          <span>prompt<span class="brand-light">library</span></span>
+        </a>
+        <span class="private-note"><span class="privacy-dot"></span>Lưu trên thiết bị của bạn</span>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow">GÓC LÀM VIỆC CỦA BẠN</p>
+          <div class="intro-row">
+            <div>
+              <h1 id="page-title">Prompt hay,<br /><span>để ngay trong tầm tay.</span></h1>
+              <p class="intro-copy">Một chỗ gọn gàng để cất, sửa và dùng lại những prompt bạn yêu thích.</p>
+            </div>
+            <button class="button button-primary add-button" id="add-prompt" type="button">
+              <span aria-hidden="true">＋</span> Tạo prompt
+            </button>
+          </div>
+        </section>
+
+        <section class="library" aria-label="Thư viện prompt">
+          <div class="library-heading">
+            <div class="library-title">
+              <h2>Thư viện</h2>
+              <span class="count-pill" id="prompt-count">0 prompt</span>
+            </div>
+            <label class="search-box">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.2 4.2"></path></svg>
+              <input id="search-input" type="search" placeholder="Tìm prompt..." autocomplete="off" />
+              <kbd>/</kbd>
+            </label>
+          </div>
+
+          <nav class="filter-list" id="filter-list" aria-label="Lọc theo danh mục"></nav>
+          <div class="prompt-grid" id="prompt-grid" aria-live="polite"></div>
+        </section>
+      </main>
+
+      <footer>
+        <span>Ít lục lại. Dùng prompt nhiều hơn.</span>
+        <span>Made for your next good idea <span aria-hidden="true">✳</span></span>
+      </footer>
+    </div>
+
+    <dialog class="editor-dialog" id="editor-dialog" aria-labelledby="editor-heading">
+      <form class="editor-form" id="editor-form">
+        <div class="editor-topline">
+          <div>
+            <p class="eyebrow">PROMPT EDITOR</p>
+            <h2 id="editor-heading">Chỉnh sửa prompt</h2>
+          </div>
+          <button class="icon-button close-button" id="close-editor" type="button" aria-label="Đóng">×</button>
+        </div>
+        <label class="field-label" for="prompt-title">Tên prompt</label>
+        <input class="text-field" id="prompt-title" name="title" maxlength="80" required />
+        <label class="field-label" for="prompt-category">Danh mục</label>
+        <input class="text-field" id="prompt-category" name="category" maxlength="32" placeholder="Ví dụ: Học tập" required />
+        <div class="content-label-row">
+          <label class="field-label" for="prompt-content">Nội dung</label>
+          <span id="character-count">0 ký tự</span>
+        </div>
+        <textarea class="text-field prompt-content" id="prompt-content" name="content" required spellcheck="false"></textarea>
+        <div class="editor-actions">
+          <button class="button button-quiet delete-button" id="delete-prompt" type="button" hidden>Xóa prompt</button>
+          <div class="editor-action-right">
+            <button class="button button-quiet" id="cancel-editor" type="button">Hủy</button>
+            <button class="button button-secondary" id="copy-editor" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"></path></svg>
+              Copy nội dung
+            </button>
+            <button class="button button-primary" type="submit">Lưu thay đổi</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
