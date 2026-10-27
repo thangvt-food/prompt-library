@@ -112,6 +112,78 @@
 
       .notice strong { color: #394a38; }
 
+      .cloudflare-form {
+        margin-top: 21px;
+        padding: 16px;
+        border: 1px solid #e6ecdf;
+        border-radius: 11px;
+        background: #fafbf7;
+      }
+
+      .cloudflare-form h2 {
+        margin: 0 0 7px;
+        font-size: 15px;
+        letter-spacing: -0.3px;
+      }
+
+      .cloudflare-copy {
+        margin: 0 0 13px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      .cloudflare-copy a { color: var(--green); }
+
+      .token-input {
+        width: 100%;
+        min-height: 41px;
+        padding: 10px 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        outline: 0;
+        background: white;
+        color: var(--ink);
+        font: 11px ui-monospace, SFMono-Regular, Consolas, monospace;
+      }
+
+      .token-input:focus {
+        border-color: #90ad98;
+        box-shadow: 0 0 0 3px rgba(47, 99, 73, 0.08);
+      }
+
+      .token-input::placeholder {
+        color: #a0a39b;
+        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      }
+
+      .cloudflare-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 11px;
+      }
+
+      .cloudflare-status {
+        min-height: 15px;
+        color: #73786f;
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .cloudflare-status.error { color: #a44c3f; }
+      .cloudflare-status.success { color: var(--green); }
+
+      .local-only {
+        margin: 11px 0 0;
+        color: #8a6654;
+        font-size: 10px;
+        line-height: 1.55;
+      }
+
+      .local-controls[hidden], .local-only[hidden] { display: none; }
+
       .section-label {
         display: flex;
         align-items: baseline;
@@ -257,7 +329,7 @@
 
         <div class="notice">
           <span aria-hidden="true">ⓘ</span>
-          <span><strong>Trang này không kết nối Cloudflare và không gửi dữ liệu đi đâu.</strong>
+          <span id="privacy-notice"><strong>Trang này không kết nối Cloudflare và không gửi dữ liệu đi đâu.</strong>
             Chỉ tạo mã ngay trên thiết bị của bạn. Mã quản trị không hết hạn; chỉ phiên đăng nhập mới hết hạn sau 7 ngày.</span>
         </div>
 
@@ -274,6 +346,29 @@
           <button class="button" id="copy" type="button" disabled>Sao chép mã</button>
           <button class="button" id="download" type="button" disabled>Tải file lưu riêng</button>
         </div>
+
+        <section class="cloudflare-form" aria-labelledby="cloudflare-heading">
+          <h2 id="cloudflare-heading">Đẩy mã mới lên Cloudflare</h2>
+          <p class="cloudflare-copy">
+            Dán API token có quyền <strong>Workers Scripts:Write</strong> để cập nhật Secret
+            <code>ADMIN_PASSWORD</code> cho Worker <code>prompt-library-api</code>.
+            <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank" rel="noreferrer">Tạo API token</a>
+          </p>
+          <div class="local-controls" id="local-controls" hidden>
+            <label class="section-label" for="cloudflare-token">Cloudflare API token</label>
+            <input class="token-input" id="cloudflare-token" type="password"
+              autocomplete="off" autocapitalize="off" spellcheck="false"
+              placeholder="Token chỉ dùng trong lần gửi này, không được lưu" />
+            <div class="cloudflare-actions">
+              <span class="cloudflare-status" id="cloudflare-status" role="status" aria-live="polite"></span>
+              <button class="button button-primary" id="push-secret" type="button" disabled>Đẩy lên Cloudflare</button>
+            </div>
+          </div>
+          <p class="local-only" id="local-only">
+            Để tránh gửi token qua một website public, hãy chạy <code>npm run admin:key</code>
+            trong thư mục dự án rồi mở địa chỉ local mà lệnh in ra. Nút đẩy chỉ hoạt động trên máy của bạn.
+          </p>
+        </section>
 
         <h2 class="section-label">Cập nhật trong Cloudflare Dashboard</h2>
         <ol class="steps">
@@ -298,7 +393,21 @@
       const stateLabel = document.querySelector("#key-state");
       const copyButton = document.querySelector("#copy");
       const downloadButton = document.querySelector("#download");
+      const localControls = document.querySelector("#local-controls");
+      const localOnly = document.querySelector("#local-only");
+      const tokenInput = document.querySelector("#cloudflare-token");
+      const pushButton = document.querySelector("#push-secret");
+      const cloudflareStatus = document.querySelector("#cloudflare-status");
       let statusTimer;
+      const isLocalHelper = ["localhost", "127.0.0.1"].includes(location.hostname) &&
+        location.port === "8788";
+
+      localControls.hidden = !isLocalHelper;
+      localOnly.hidden = isLocalHelper;
+      if (isLocalHelper) {
+        document.querySelector("#privacy-notice").innerHTML =
+          "<strong>Mã được tạo ngay trên thiết bị.</strong> Chỉ khi bạn nhấn đẩy, token mới được gửi tới helper localhost và Cloudflare; trang không lưu token. Mã quản trị không hết hạn, phiên đăng nhập hết hạn sau 7 ngày.";
+      }
 
       function showStatus(message) {
         status.textContent = message;
@@ -322,7 +431,47 @@
         stateLabel.textContent = "Đã tạo 256-bit";
         copyButton.disabled = false;
         downloadButton.disabled = false;
+        pushButton.disabled = !isLocalHelper || !tokenInput.value.trim();
         showStatus("Đã tạo mã mới trên thiết bị này.");
+      });
+
+      tokenInput.addEventListener("input", () => {
+        pushButton.disabled = !output.value || !tokenInput.value.trim();
+      });
+
+      pushButton.addEventListener("click", async () => {
+        const apiToken = tokenInput.value.trim();
+        if (!output.value || !apiToken) {
+          cloudflareStatus.textContent = "Tạo mã mới và nhập API token trước.";
+          cloudflareStatus.className = "cloudflare-status error";
+          return;
+        }
+
+        pushButton.disabled = true;
+        tokenInput.disabled = true;
+        cloudflareStatus.textContent = "Đang cập nhật Secret và deploy Worker…";
+        cloudflareStatus.className = "cloudflare-status";
+        try {
+          const response = await fetch("/api/update-secret", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ apiToken, secret: output.value }),
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || `Cập nhật thất bại (${response.status}).`);
+
+          tokenInput.value = "";
+          stateLabel.textContent = "Đã đẩy lên Cloudflare";
+          cloudflareStatus.textContent = "Đã cập nhật ADMIN_PASSWORD và deploy Worker. Đăng nhập website bằng mã mới.";
+          cloudflareStatus.className = "cloudflare-status success";
+        } catch (error) {
+          console.error("Could not update the Cloudflare secret:", error);
+          cloudflareStatus.textContent = error.message;
+          cloudflareStatus.className = "cloudflare-status error";
+        } finally {
+          tokenInput.disabled = false;
+          pushButton.disabled = !output.value || !tokenInput.value.trim();
+        }
       });
 
       copyButton.addEventListener("click", async () => {

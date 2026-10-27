@@ -2,6 +2,7 @@
   "name": "prompt-library",
   "private": true,
   "scripts": {
+    "admin:key": "node admin-key-server.js",
     "dev:api": "wrangler dev",
     "db:migrate:local": "wrangler d1 migrations apply prompt-library-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply prompt-library-db --remote",

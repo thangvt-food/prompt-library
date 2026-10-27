@@ -23,20 +23,21 @@ Yêu cầu Node.js 22+ và Wrangler đã đăng nhập bằng `npx wrangler logi
 2. Dán `database_id` được trả về vào `wrangler.toml`.
 3. Tạo bảng: `npm run db:migrate:remote`.
 4. Deploy Worker: `npm run deploy:api` và chép URL `workers.dev` vào thẻ `meta[name="prompt-api"]` trong `index.html`.
-5. Tạo mã quản trị bằng [admin-key.html](./admin-key.html) và đặt Secret `ADMIN_PASSWORD` qua Cloudflare Dashboard như hướng dẫn bên dưới (không cần lệnh CLI cho việc quản lý mã).
+5. Sau khi Worker đã deploy, đặt Secret `ADMIN_PASSWORD` bằng công cụ local bên dưới.
 6. Commit và push thay đổi; GitHub Actions tự triển khai website.
 
 Mã quản trị không nằm trong mã nguồn. Worker cấp token phiên 7 ngày; khi hết hạn bạn chỉ cần đăng nhập lại bằng cùng mã quản trị — mã này không tự hết hạn. CORS chỉ cho phép website GitHub Pages và localhost dùng để phát triển.
 
 ## Tạo hoặc đổi mã quản trị
 
-1. Mở file [admin-key.html](./admin-key.html) trực tiếp trên máy (không cần server, CLI hay kết nối mạng).
-2. Nhấn **Tạo mã mới**, rồi sao chép mã hoặc tải file lưu riêng. Mã được tạo bằng bộ sinh số an toàn của trình duyệt và có 256-bit entropy.
-3. Vào [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → `prompt-library-api` → **Settings** → **Variables and Secrets**.
-4. Sửa hoặc thêm Secret `ADMIN_PASSWORD`, dán mã vừa tạo rồi lưu/deploy Worker.
-5. Đăng nhập lại website bằng mã mới. Việc đổi mã sẽ làm phiên quản trị cũ hết hiệu lực.
+1. Tạo một Cloudflare API token với quyền **Workers Scripts:Write** trên account chứa Worker `prompt-library-api`.
+2. Trong thư mục dự án, chạy `npm run admin:key`; mở `http://127.0.0.1:8788/` được in ra.
+3. Nhấn **Tạo mã mới**, dán API token rồi chọn **Đẩy lên Cloudflare**.
+4. Đăng nhập lại website bằng mã vừa tạo. Việc đổi mã sẽ làm phiên quản trị cũ hết hiệu lực.
 
-Trang HTML tạo mã hoàn toàn offline; nó không thể tự sửa Secret trên Cloudflare (để không phải nhúng API token có quyền quản trị vào file). Hãy lưu mã/file đã tải ở nơi riêng tư, đừng commit hay chia sẻ — bất kỳ ai có mã đều có thể sửa thư viện. File `.admin-password` trong workspace là bản cục bộ đã được Git ignore; cập nhật bản sao này khi đổi mã.
+Trang HTML vẫn có thể mở để tạo mã offline, nhưng thao tác đẩy chỉ bật tại địa chỉ localhost do helper cục bộ phục vụ. Helper gọi Cloudflare API trực tiếp từ máy bạn để tránh giới hạn CORS; API token chỉ được gửi tới localhost rồi Cloudflare, không ghi vào log hay lưu thành file/trình duyệt. Đóng helper bằng `Ctrl+C` sau khi xong.
+
+Không dùng Global API Key. API token có quyền Workers Scripts:Write có thể sửa Worker trong phạm vi account được cấp; hãy tạo token riêng, giới hạn account và thu hồi sau khi dùng nếu muốn. Mã quản trị cũng cho phép sửa thư viện, vì vậy không chia sẻ mã/file đã tải.
 
 ## Phát triển và cập nhật D1
 
