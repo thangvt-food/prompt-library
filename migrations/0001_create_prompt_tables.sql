@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS prompts (
+  id TEXT PRIMARY KEY NOT NULL,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  sort_order INTEGER NOT NULL,
+  builtin INTEGER NOT NULL DEFAULT 0 CHECK (builtin IN (0, 1))
+);
+
+CREATE INDEX IF NOT EXISTS prompts_sort_order_idx ON prompts (sort_order, created_at);
+
+CREATE TABLE IF NOT EXISTS app_meta (
+  key TEXT PRIMARY KEY NOT NULL,
+  value TEXT NOT NULL
+);

@@ -1,3 +1,7 @@
 .DS_Store
 Thumbs.db
 *.docx
+node_modules/
+.dev.vars
+.wrangler/
+.admin-password

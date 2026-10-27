@@ -50,6 +50,18 @@ button {
   border-bottom: 1px solid rgba(35, 39, 34, 0.08);
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.auth-button {
+  min-height: 34px;
+  padding: 0 11px;
+  font-size: 10px;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -160,6 +172,11 @@ h1 span {
 
 .button-primary:hover {
   background: var(--green-dark);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
 }
 
 .button-secondary {
@@ -474,6 +491,24 @@ footer span:last-child span {
   backdrop-filter: blur(3px);
 }
 
+.login-dialog {
+  width: min(440px, calc(100% - 24px));
+}
+
+.login-hint {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.login-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 21px;
+}
+
 .editor-form {
   padding: 25px;
 }
@@ -618,6 +653,22 @@ input.text-field {
   .private-note {
     gap: 6px;
     font-size: 10px;
+  }
+
+  .topbar-actions {
+    gap: 9px;
+  }
+
+  .topbar-actions .private-note {
+    display: none;
+  }
+
+  .auth-button {
+    max-width: 132px;
+    min-height: 32px;
+    padding: 0 8px;
+    font-size: 9px;
+    white-space: normal;
   }
 
   .intro {

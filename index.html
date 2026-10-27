@@ -8,9 +8,10 @@
       content="Thư viện prompt cá nhân: tìm, chỉnh sửa và sao chép prompt nhanh."
     />
     <meta name="theme-color" content="#f5f4f0" />
+    <meta name="prompt-api" content="https://prompt-library-api.aczaao12.workers.dev" />
     <title>Prompt Library — Góc prompt của bạn</title>
     <link rel="stylesheet" href="./styles.css" />
-    <script src="./app.js" defer></script>
+    <script type="module" src="./app.js"></script>
   </head>
   <body>
     <div class="app-shell">
@@ -19,7 +20,10 @@
           <span class="brand-mark" aria-hidden="true">p.</span>
           <span>prompt<span class="brand-light">library</span></span>
         </a>
-        <span class="private-note"><span class="privacy-dot"></span>Lưu trên thiết bị của bạn</span>
+        <div class="topbar-actions">
+          <span class="private-note"><span class="privacy-dot"></span>Đồng bộ qua Cloudflare D1</span>
+          <button class="button button-quiet auth-button" id="auth-button" type="button">Đăng nhập quản trị</button>
+        </div>
       </header>
 
       <main>
@@ -88,6 +92,25 @@
             </button>
             <button class="button button-primary" type="submit">Lưu thay đổi</button>
           </div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="editor-dialog login-dialog" id="login-dialog" aria-labelledby="login-heading">
+      <form class="editor-form" id="login-form">
+        <div class="editor-topline">
+          <div>
+            <p class="eyebrow">CHỈ DÀNH CHO CHỦ THƯ VIỆN</p>
+            <h2 id="login-heading">Đăng nhập quản trị</h2>
+          </div>
+          <button class="icon-button" id="close-login" type="button" aria-label="Đóng">×</button>
+        </div>
+        <label class="field-label" for="admin-password">Mật khẩu quản trị</label>
+        <input class="text-field" id="admin-password" type="password" autocomplete="current-password" required />
+        <p class="login-hint">Khách vẫn có thể xem và copy prompt; chỉ quản trị viên mới được thêm, sửa hoặc xóa.</p>
+        <div class="login-actions">
+          <button class="button button-quiet" id="cancel-login" type="button">Hủy</button>
+          <button class="button button-primary" type="submit">Đăng nhập</button>
         </div>
       </form>
     </dialog>

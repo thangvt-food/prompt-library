@@ -1,0 +1,13 @@
+{
+  "name": "prompt-library",
+  "private": true,
+  "scripts": {
+    "dev:api": "wrangler dev",
+    "db:migrate:local": "wrangler d1 migrations apply prompt-library-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply prompt-library-db --remote",
+    "deploy:api": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.153.0"
+  }
+}
