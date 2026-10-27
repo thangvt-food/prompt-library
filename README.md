@@ -23,12 +23,20 @@ Yêu cầu Node.js 22+ và Wrangler đã đăng nhập bằng `npx wrangler logi
 2. Dán `database_id` được trả về vào `wrangler.toml`.
 3. Tạo bảng: `npm run db:migrate:remote`.
 4. Deploy Worker: `npm run deploy:api` và chép URL `workers.dev` vào thẻ `meta[name="prompt-api"]` trong `index.html`.
-5. Đặt mật khẩu quản trị ngẫu nhiên dài ít nhất 24 ký tự: `npx wrangler secret put ADMIN_PASSWORD`.
+5. Tạo mã quản trị bằng [admin-key.html](./admin-key.html) và đặt Secret `ADMIN_PASSWORD` qua Cloudflare Dashboard như hướng dẫn bên dưới (không cần lệnh CLI cho việc quản lý mã).
 6. Commit và push thay đổi; GitHub Actions tự triển khai website.
 
-Mật khẩu không nằm trong mã nguồn. Worker cấp token phiên 7 ngày; trình duyệt chỉ giữ token trong session hiện tại. CORS chỉ cho phép website GitHub Pages và localhost dùng để phát triển.
+Mã quản trị không nằm trong mã nguồn. Worker cấp token phiên 7 ngày; khi hết hạn bạn chỉ cần đăng nhập lại bằng cùng mã quản trị — mã này không tự hết hạn. CORS chỉ cho phép website GitHub Pages và localhost dùng để phát triển.
 
-Trong lần thiết lập của repo này, mật khẩu được sinh ngẫu nhiên và lưu cục bộ trong file `.admin-password` (đã được Git ignore). Đọc file này để đăng nhập. Để đổi mật khẩu, chạy `npx wrangler secret put ADMIN_PASSWORD`, nhập mật khẩu mới rồi xóa/thay file cũ.
+## Tạo hoặc đổi mã quản trị
+
+1. Mở file [admin-key.html](./admin-key.html) trực tiếp trên máy (không cần server, CLI hay kết nối mạng).
+2. Nhấn **Tạo mã mới**, rồi sao chép mã hoặc tải file lưu riêng. Mã được tạo bằng bộ sinh số an toàn của trình duyệt và có 256-bit entropy.
+3. Vào [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → `prompt-library-api` → **Settings** → **Variables and Secrets**.
+4. Sửa hoặc thêm Secret `ADMIN_PASSWORD`, dán mã vừa tạo rồi lưu/deploy Worker.
+5. Đăng nhập lại website bằng mã mới. Việc đổi mã sẽ làm phiên quản trị cũ hết hiệu lực.
+
+Trang HTML tạo mã hoàn toàn offline; nó không thể tự sửa Secret trên Cloudflare (để không phải nhúng API token có quyền quản trị vào file). Hãy lưu mã/file đã tải ở nơi riêng tư, đừng commit hay chia sẻ — bất kỳ ai có mã đều có thể sửa thư viện. File `.admin-password` trong workspace là bản cục bộ đã được Git ignore; cập nhật bản sao này khi đổi mã.
 
 ## Phát triển và cập nhật D1
 

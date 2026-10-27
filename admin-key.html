@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f4f0" />
+    <meta
+      name="description"
+      content="Công cụ offline tạo mã quản trị ngẫu nhiên cho Prompt Library."
+    />
+    <title>Tạo mã quản trị — Prompt Library</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f5f4f0;
+        --surface: #fffefa;
+        --ink: #232722;
+        --muted: #73786f;
+        --line: #e6e5de;
+        --green: #2f6349;
+        --green-dark: #244e39;
+        --mint: #e7f0e9;
+        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        padding: 24px;
+        background:
+          radial-gradient(ellipse at 86% 0, rgba(234, 213, 176, 0.2), transparent 30rem),
+          var(--paper);
+        color: var(--ink);
+      }
+
+      button { font: inherit; cursor: pointer; }
+
+      .shell { width: min(680px, 100%); margin: 0 auto; }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 0 42px;
+        color: var(--ink);
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 10px;
+        background: var(--green);
+        color: white;
+        font-size: 19px;
+      }
+
+      .brand-light { color: #888d84; font-weight: 500; }
+
+      .panel {
+        padding: clamp(22px, 5vw, 40px);
+        border: 1px solid var(--line);
+        border-radius: 17px;
+        background: var(--surface);
+        box-shadow: 0 12px 40px rgba(42, 48, 37, 0.06);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--green);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.65px;
+      }
+
+      h1, h2 { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(27px, 6vw, 38px);
+        letter-spacing: -1.6px;
+      }
+
+      .intro {
+        margin: 0 0 25px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      .notice {
+        display: flex;
+        gap: 10px;
+        padding: 12px 14px;
+        border: 1px solid #e6ecdf;
+        border-radius: 10px;
+        background: #f6f8f2;
+        color: #58664f;
+        font-size: 11px;
+        line-height: 1.55;
+      }
+
+      .notice strong { color: #394a38; }
+
+      .section-label {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 25px 0 8px;
+        color: #4a5049;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .section-label span:last-child {
+        color: #92978e;
+        font-size: 10px;
+        font-weight: 400;
+      }
+
+      .key-output {
+        width: 100%;
+        min-height: 92px;
+        padding: 13px;
+        resize: vertical;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        outline: 0;
+        background: #fbfbf8;
+        color: var(--green-dark);
+        font: 600 12px/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
+        overflow-wrap: anywhere;
+      }
+
+      .key-output:focus {
+        border-color: #90ad98;
+        box-shadow: 0 0 0 3px rgba(47, 99, 73, 0.08);
+      }
+
+      .hint {
+        margin: 7px 0 0;
+        color: #858a81;
+        font-size: 10px;
+        line-height: 1.55;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 15px;
+      }
+
+      .button {
+        min-height: 41px;
+        padding: 0 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: transparent;
+        color: #5f665e;
+        font-size: 11px;
+        font-weight: 700;
+        transition: background 140ms ease, transform 140ms ease;
+      }
+
+      .button:active { transform: translateY(1px); }
+      .button:hover { background: #f8f8f4; }
+
+      .button-primary {
+        border-color: var(--green);
+        background: var(--green);
+        color: white;
+      }
+
+      .button-primary:hover { background: var(--green-dark); }
+      .button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+      .steps {
+        margin: 9px 0 0;
+        padding-left: 19px;
+        color: #686e65;
+        font-size: 11px;
+        line-height: 1.8;
+      }
+
+      .steps code {
+        padding: 2px 4px;
+        border-radius: 4px;
+        background: #f1f1ec;
+        color: #384b3d;
+        font: 10px ui-monospace, SFMono-Regular, Consolas, monospace;
+        overflow-wrap: anywhere;
+      }
+
+      .steps a { color: var(--green); }
+
+      .warning {
+        margin: 20px 0 0;
+        padding-top: 15px;
+        border-top: 1px solid #eeede7;
+        color: #8a6654;
+        font-size: 10px;
+        line-height: 1.6;
+      }
+
+      .status {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        padding: 11px 15px;
+        transform: translateY(10px);
+        border-radius: 9px;
+        background: #263d2e;
+        color: white;
+        font-size: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 150ms ease, transform 150ms ease;
+      }
+
+      .status.visible { transform: translateY(0); opacity: 1; }
+
+      @media (max-width: 480px) {
+        body { padding: 16px; }
+        .brand { margin: 4px 0 24px; }
+        .actions { grid-template-columns: 1fr 1fr; }
+        #generate { grid-column: 1 / -1; }
+        .status { right: 12px; bottom: 12px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <a class="brand" href="./index.html" aria-label="Prompt Library">
+        <span class="brand-mark" aria-hidden="true">p.</span>
+        <span>prompt<span class="brand-light">library</span></span>
+      </a>
+
+      <section class="panel" aria-labelledby="page-title">
+        <p class="eyebrow">CÔNG CỤ OFFLINE</p>
+        <h1 id="page-title">Tạo mã quản trị mới.</h1>
+        <p class="intro">
+          Tạo một mã ngẫu nhiên 256-bit bằng bộ sinh số an toàn của trình duyệt,
+          rồi băm SHA-256 thành chuỗi 64 ký tự hex để dùng làm mật khẩu quản trị.
+        </p>
+
+        <div class="notice">
+          <span aria-hidden="true">ⓘ</span>
+          <span><strong>Trang này không kết nối Cloudflare và không gửi dữ liệu đi đâu.</strong>
+            Chỉ tạo mã ngay trên thiết bị của bạn. Mã quản trị không hết hạn; chỉ phiên đăng nhập mới hết hạn sau 7 ngày.</span>
+        </div>
+
+        <label class="section-label" for="admin-key">
+          <span>Mã mới — SHA-256</span>
+          <span id="key-state">Chưa tạo</span>
+        </label>
+        <textarea class="key-output" id="admin-key" readonly spellcheck="false"
+          placeholder="Nhấn “Tạo mã mới” để sinh mã quản trị…"></textarea>
+        <p class="hint">Chuỗi này là mật khẩu đăng nhập và cũng là giá trị mới cho Cloudflare Secret <code>ADMIN_PASSWORD</code>.</p>
+
+        <div class="actions">
+          <button class="button button-primary" id="generate" type="button">Tạo mã mới</button>
+          <button class="button" id="copy" type="button" disabled>Sao chép mã</button>
+          <button class="button" id="download" type="button" disabled>Tải file lưu riêng</button>
+        </div>
+
+        <h2 class="section-label">Cập nhật trong Cloudflare Dashboard</h2>
+        <ol class="steps">
+          <li>Đăng nhập <a href="https://dash.cloudflare.com/" target="_blank" rel="noreferrer">Cloudflare Dashboard</a> → <strong>Workers & Pages</strong> → <code>prompt-library-api</code>.</li>
+          <li>Mở <strong>Settings</strong> → <strong>Variables and Secrets</strong>; sửa hoặc thêm Secret <code>ADMIN_PASSWORD</code>.</li>
+          <li>Sao chép mã mới ở trên vào giá trị Secret, rồi lưu/deploy Worker.</li>
+          <li>Đăng nhập lại tại <a href="https://thangvt-food.github.io/prompt-library/" target="_blank" rel="noreferrer">Prompt Library</a> bằng chính mã vừa tạo.</li>
+        </ol>
+
+        <p class="warning">
+          Mã mới có hiệu lực ngay khi Worker được deploy và sẽ làm các phiên quản trị cũ mất hiệu lực.
+          Nếu chọn “Tải file lưu riêng”, hãy giữ file ở nơi riêng tư; bất kỳ ai có mã này đều có thể sửa thư viện.
+        </p>
+      </section>
+    </main>
+
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+
+    <script>
+      const output = document.querySelector("#admin-key");
+      const status = document.querySelector("#status");
+      const stateLabel = document.querySelector("#key-state");
+      const copyButton = document.querySelector("#copy");
+      const downloadButton = document.querySelector("#download");
+      let statusTimer;
+
+      function showStatus(message) {
+        status.textContent = message;
+        status.classList.add("visible");
+        window.clearTimeout(statusTimer);
+        statusTimer = window.setTimeout(() => status.classList.remove("visible"), 2600);
+      }
+
+      function toHex(bytes) {
+        return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+      }
+
+      document.querySelector("#generate").addEventListener("click", async () => {
+        if (!globalThis.crypto?.getRandomValues || !globalThis.crypto?.subtle) {
+          showStatus("Trình duyệt không hỗ trợ Web Crypto trên nguồn này. Hãy mở file bằng trình duyệt hiện đại.");
+          return;
+        }
+        const random = crypto.getRandomValues(new Uint8Array(32));
+        const digest = await crypto.subtle.digest("SHA-256", random);
+        output.value = toHex(new Uint8Array(digest));
+        stateLabel.textContent = "Đã tạo 256-bit";
+        copyButton.disabled = false;
+        downloadButton.disabled = false;
+        showStatus("Đã tạo mã mới trên thiết bị này.");
+      });
+
+      copyButton.addEventListener("click", async () => {
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(output.value);
+          } else {
+            const wasFocused = document.hasFocus();
+            output.focus();
+            output.select();
+            const copied = document.execCommand("copy");
+            if (!copied || !wasFocused) {
+              showStatus("Mã đã được chọn. Nhấn Ctrl+C (hoặc ⌘C) để sao chép.");
+              return;
+            }
+          }
+          showStatus("Đã sao chép mã.");
+        } catch (error) {
+          console.error("Could not copy the admin key:", error);
+          showStatus("Không thể tự sao chép. Hãy chọn và copy mã trong ô.");
+        }
+      });
+
+      downloadButton.addEventListener("click", () => {
+        const file = new Blob([`${output.value}\n`], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(file);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "prompt-library-admin-password.txt";
+        link.click();
+        URL.revokeObjectURL(url);
+        showStatus("Đã tải file mã quản trị. Hãy giữ file riêng tư.");
+      });
+    </script>
+  </body>
+</html>
