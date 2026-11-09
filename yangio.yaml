@@ -1,0 +1,24 @@
+slug: prompt-library
+name: Prompt Library
+tagline: Thư viện prompt cá nhân, tìm nhanh và copy một chạm
+url: https://thangvt-food.github.io/prompt-library/
+status: live
+visibility: public
+description: Thư viện prompt mobile-first dùng Cloudflare Worker + D1 để đồng bộ; mọi người xem/copy, chỉ admin đăng nhập mới sửa.
+tags:
+  - prompt
+  - ai
+  - thư-viện
+category: tools
+tech:
+  - javascript
+  - cloudflare-workers
+  - cloudflare-d1
+hosting: github-pages
+updated: '2026-10-27'
+version: 1.0.0
+icon: 💬
+auth: login
+links:
+  repo: https://github.com/thangvt-food/prompt-library
+notes: Trang public trên GitHub Pages, API Worker/D1 trong worker.js và wrangler.toml.
